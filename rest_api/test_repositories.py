@@ -38,6 +38,7 @@ class TestUpdateRepositories:
 
     url = f"https://api.github.com/repos/{helpers.USER_NAME}"
     headers = {"Accept": "application/vnd.github+json"}
+    test_repo_name = "test_repo_2"
 
     def test_update_non_existant(self, token_grained_all):
         random_description = helpers.random_string(100)
@@ -50,6 +51,18 @@ class TestUpdateRepositories:
             content=update_data,
         )
         assert response.status_code == 404, "Unexpected status code"
+
+    def test_update_existant(self, token_grained_all):
+        random_description = helpers.random_string(100)
+        auth_header = {"Authorization": f"Bearer {token_grained_all}"}
+        auth_header.update(self.headers)
+        update_data = json.dumps({"description": random_description})
+        response = httpx.patch(
+            self.url + f"/{self.test_repo_name}",
+            headers=auth_header,
+            content=update_data,
+        )
+        assert response.status_code == 200, "Unexpected status code"
 
 
 class TestDeleteRepositories:
